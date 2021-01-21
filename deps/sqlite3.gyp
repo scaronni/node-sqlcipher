@@ -51,8 +51,10 @@
         ],
         'link_settings': {
           'libraries': [
-            '-llibeay32.lib',
-            '-lssleay32.lib',
+            '-llibcrypto.lib',
+            '-llibssl.lib',
+            '-lws2_32.lib',
+            '-lcrypt32.lib'
           ],
           'library_dirs': [
             '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/<(openssl_root)'
@@ -60,20 +62,18 @@
         }
       },
       'OS == "mac"', {
-        'variables': {
-          'openssl_root%': '/usr/local/opt/openssl@1.1'
-        },
         'link_settings': {
           'libraries': [
             # This statically links libcrypto, whereas -lcrypto would dynamically link it
-            '<(openssl_root)/lib/libcrypto.a'
+            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/OpenSSL-macOS/libcrypto.a'
           ]
         }
       },
       { # Linux
         'link_settings': {
           'libraries': [
-            '-lcrypto'
+            # This statically links libcrypto, whereas -lcrypto would dynamically link it
+            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/OpenSSL-Linux/libcrypto.a'
           ]
         }
       }]
@@ -112,8 +112,9 @@
           "copies": [
             {
               "files": [
-                '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/>(openssl_root)/libeay32.dll',
-                '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/>(openssl_root)/msvcr120.dll'
+                '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/>(openssl_root)/libssl.lib',
+                '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/>(openssl_root)/libcrypto.lib',
+                '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/>(openssl_root)/ossl_static.pdb'
               ],
               "destination": "<(PRODUCT_DIR)"
             }
@@ -134,12 +135,13 @@
         "OS == \"mac\"", {
           'include_dirs': [
             '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/',
-            '>(openssl_root)/include'
+            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/openssl-include/'
           ]
         },
         { # linux
           'include_dirs': [
-            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/'
+            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/',
+            '<(SHARED_INTERMEDIATE_DIR)/sqlcipher-amalgamation-<@(sqlite_version)/openssl-include/'
           ]
         }]
       ],
@@ -158,7 +160,6 @@
         'defines': [
           'SQLITE_THREADSAFE=1',
           'HAVE_USLEEP=1',
-          'SQLITE_ENABLE_FTS3',
           'SQLITE_ENABLE_FTS5',
           'SQLITE_ENABLE_JSON1',
           'SQLITE_ENABLE_RTREE',
@@ -175,7 +176,6 @@
         '_REENTRANT=1',
         'SQLITE_THREADSAFE=1',
         'HAVE_USLEEP=1',
-        'SQLITE_ENABLE_FTS3',
         'SQLITE_ENABLE_FTS5',
         'SQLITE_ENABLE_JSON1',
         'SQLITE_ENABLE_RTREE',

@@ -61,19 +61,6 @@
             "destination": "<(module_path)"
           }
       ],
-      "conditions": [
-        ["OS == \"win\"", {
-          "copies": [
-              {
-                "files": [
-                  "<(PRODUCT_DIR)/libeay32.dll",
-                  "<(PRODUCT_DIR)/msvcr120.dll"
-                ],
-                "destination": "<(module_path)"
-              }
-          ]
-        }]
-      ]
     }
   ]
 }
